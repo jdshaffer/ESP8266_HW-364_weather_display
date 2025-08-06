@@ -1,13 +1,12 @@
------------
-Board Info
------------
+-----------------------
+Board Info for HW-364a
+-----------------------
 
 
-ESP8266 WiFi Module with OLED 0.96" Display HW-364a
+HW-364a = ESP8266 WiFi Module with OLED 0.96" Display 
 
 
-
-Description
+DESCRIPTION
 The ESP8266 module with 0.96" OLED display HW-364a combines powerful Wi-Fi capabilities with a convenient graphical interface. It is suitable for creating IoT projects, home automation, data monitoring, and other smart solutions. The built-in OLED display simplifies information output and device control.
 
 
@@ -26,7 +25,6 @@ To output an image to a basic OLED display, use the following parameters:
 #define OLED_SCL 12 // D5
 
 
-
 Libraries for working with a graphic display:
-Adafruit SSD1306
+Adafruit SSD1306      <-- I'm using this one
 U8g2
