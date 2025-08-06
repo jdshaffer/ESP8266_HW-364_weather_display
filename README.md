@@ -1,6 +1,8 @@
 # Weather Display Program for ESP8266 (HW-364a)
 This is a simple program that grabs the current weather conditions every 15 minutes and displays it on the OLED display of an HW-364a, which is really just an ESP8266 development board with built-in 128x64 resolution 0.96" OLED display.
 
+![AHT20_BMP280 logo](https://github.com/jdshaffer/display_weather_on_HW-364a/blob/main/weather_display.jpg)
+
 I wanted to share this sample program I created (with help from Google Gemini) as I couldn't find many examples online to help me get started with this development board.
 
 Here are some detailed steps to help you get it up and running on your HW-364a device:
