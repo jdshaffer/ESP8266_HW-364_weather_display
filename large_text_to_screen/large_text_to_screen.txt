@@ -1,0 +1,12 @@
+-------------------------------------
+About large_text_to_screen.cpp
+-------------------------------------
+
+
+This program shows how to write text to the built-in OLED display.
+
+Only one library (for the display) is necessary.
+
+Because the text is double-size, the screen can only display 10 characters wide and 4 lines up-and-down.
+
+No other special notes are necessary for this program.
