@@ -10,4 +10,5 @@ To get started, be sure to go through the <a href="https://github.com/jdshaffer/
 ### Sample Programs (each can be found in its own sub-folder)
 * <a href="https://github.com/jdshaffer/sample_programs_for_HW-364a_and_HW-364b/tree/main/current_weather">Current Weather</a> -- Connects to the internet and grabs the current weather conditions for the latitude and longitude specified. Displays the update time, the temperature, the "feels like" temperature, and humidity. 
 * <a href="https://github.com/jdshaffer/sample_programs_for_HW-364a_and_HW-364b/tree/main/current_weather_with_button">Current Weather with Button</a> -- Same as "Current Weather", but pressing the "Flash" button toggles the text-size between normal and larger. (Note that the large text size displays less information on the screen.)
+  <a href="https://github.com/jdshaffer/sample_programs_for_HW-364a_and_HW-364b/tree/main/text_to_screen">Text to Screen</a> -- A minimal program that demonstrates how to write text to the built-in OLED display.
 * 
