@@ -1,0 +1,51 @@
+-------------------------------------
+Getting current_weather.cpp to Work
+-------------------------------------
+
+
+
+Here are some detailed steps to help you get the "current_weather" program to work on the HW-364a:
+
+
+(1) Be sure you have completed the "How to Get Started" instruction
+
+(2) Install the necessary libraries into Arduino IDE
+    - Go to Tools > Manage Libraries...
+    - Then search for each of these libraries and click "Install" for each:
+      ESP8266 Board Support Package
+      ESP8266WiFi
+      ESP8266HTTPClient
+      ArduinoJson
+
+(3) Connect your HW-364a (ESP8266) board to your computer
+
+
+(4) Double-check that these settings in the Arduino IDE are correct:
+    - Board: "Generic ESP8266 Module"
+    - Port: Ensure the correct COM port is selected.
+      (Mine has the keyword "USB" in it)
+    - Upload Speed: "115200"
+    - Flash Size: "1MB (FS:64KB OTA:~470KB)"
+    - Erase Flash: "Only Sktech"
+
+(5) Update the program to work with your WiFi network
+    - Change the filename from current_weather.cpp to current_weather.ino
+      (An ino file is basically a cpp file, but it's the name the IDE uses.)
+    - Open current_weather.ino in Arduino IDE
+    - Find the place where it says "Wi-Fi network credentials" and
+      replace "Your SSID Goes Here" with your network SSID (keep the "  "), 
+      and replace "Your WiFi Password Goes Here" with your WiFi password
+      (again, keep the "  ").
+    - Change the latitude and longitude given in the long URL (found
+      in the section named "Open-Meteo API Configuration"). You can
+      find your latitude and longitude by finding your home with Google
+      Maps (web browser) and look at the URL.
+    - You might need to change away from the Japan weather model, I'm not
+      sure as I never tried to see what would happen if I looked up a
+      location outside of Japan. See Open-Meteo.com for more info.
+
+(6) Send the program to your board
+    - Click the "checkmark" button at the top left to make sure the program
+      compiled correctly (make sure there are not detectable errors).
+    - Click the "right arrow" button at the top left to send the program
+      to your HW-364a board. Once loaded, it will run automatically.
