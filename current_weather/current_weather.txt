@@ -1,11 +1,25 @@
 -------------------------------------
-Getting current_weather.cpp to Work
+About current_weather.cpp
 -------------------------------------
 
 
+Notes about this program:
+    - The current version displays text at 2x for readability
+      (You can change it back to 1x by setting display.setTextSize(2) to
+       display.setTextSize(1) in both locations)
 
-Here are some detailed steps to help you get the "current_weather" program to work on the HW-364a:
+    - The current program displays weather information for Shizuoka, Japan
+      which is where I live. Hi!
 
+    - The word "Time" displayed at the top of the screen is the "Update Time",
+      when the data was last updated. It is set to update every 15 minutes.
+
+
+
+
+----------------------------------------------------
+How to get "current_weather" to run on your HW-364a
+----------------------------------------------------
 
 (1) Be sure you have completed the "How to Get Started" instruction
 
@@ -16,6 +30,8 @@ Here are some detailed steps to help you get the "current_weather" program to wo
       ESP8266WiFi
       ESP8266HTTPClient
       ArduinoJson
+      Adafruit GFX Library
+      Adafruit SSD1306
 
 (3) Connect your HW-364a (ESP8266) board to your computer
 

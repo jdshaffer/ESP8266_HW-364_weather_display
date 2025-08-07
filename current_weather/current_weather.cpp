@@ -1,34 +1,7 @@
 //------------------------------------------------------------
-// "Current Weather" for ESP8266 with HW-364a OLED Display
+// "Current Weather" for HW-364a Development Board
 // Jeffrey D. Shaffer and Google Gemini
-// 2025-08-06
-//
-//------------------------------------------------------------
-// Notes:
-//    - Current version displays text at 2x for readability
-//         (Set display.setTextSize to 2)
-//
-//    - Current program displays weather information for
-//      Shizuoka, Japan (where I live)
-//
-//    - "Time" in the display is the time when the data
-//       was last updated.
-//
-//------------------------------------------------------------
-// How to Make it Work:
-//    - You will need to enter your WiFi SSID and Password
-//      in the code below
-//    - You will need to change the latitude and longitude
-//      in the weather URL to your current location (and 
-//      perhaps change it away from the JP model. See 
-//      Open-Meteo.com for more info.)
-//    - Rename this file as current_weather.ino
-//    - Open current_weather.ino in Arduino IDE
-//    - Install these libraries into Arduino IDE:
-//         - ArduinoJson
-//         - Adafruit GFX Library
-//         - Adafruit SSD1306
-//    - Send to your ESP8266 board with HW-364a display
+// 2025-08-07
 //
 //------------------------------------------------------------
 
