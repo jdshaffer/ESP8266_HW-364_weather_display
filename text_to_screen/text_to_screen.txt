@@ -1,0 +1,10 @@
+-------------------------------------
+About text_to_screen.cpp
+-------------------------------------
+
+
+This program shows how to write text to the built-in OLED display.
+
+Only one library (for the display) is necessary.
+
+No other special notes are necessary for this program.
