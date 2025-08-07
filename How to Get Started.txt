@@ -1,7 +1,6 @@
-------------------------------------
-How to Get Started with the HW-364a
-------------------------------------
-
+------------------------------------------------
+How to Get Started with the HW-364a and HW-364b
+------------------------------------------------
 
 
 Here are some detailed steps to help you get it up and running on your HW-364a device:
