@@ -5,7 +5,7 @@ This will (hopefully) grow into a small collection of sample programs for the HW
 
 I'm a rather simple guy, and so I will slowly be uploading sample programs with a CPP (C++) extention and a corresponding TXT (text) file with the details on how to use the sample program. Note that you will need to rename each program from `FILENAME.cpp` to `FILENAME.ino` as INO is the extention that Arduino IDE expects to see (even though it's just a CPP file).
 
-To get started, be sure to go through the <a href="https://github.com/jdshaffer/sample_programs_for_HW-364a_and_HW-364b/blob/main/How%20to%20Get%20Your%20Board%20Working%20with%20Arduino%20IDE.txt" target="_blank">`How to Get Your Board Working with Arduino IDE.txt`</a> file, which explains how to get the Arduino IDE setup to use with your HW-364a or HW-364b board.
+To get started, be sure to go through the <a href="https://github.com/jdshaffer/sample_programs_for_HW-364a_and_HW-364b/blob/main/How%20to%20Get%20Your%20Board%20Working%20with%20Arduino%20IDE.txt" target="_blank">"How to Get Your Board Working with Arduino IDE.txt"</a> file, which explains how to get the Arduino IDE setup to use with your HW-364a or HW-364b board.
 
 ### Sample Programs (each can be found in its own sub-folder)
 * `Current Weather` -- Connects to the internet and grabs the current weather conditions for the latitude and longitude specified. Displays the update time, the temperature, the "feels like" temperature, and humidity. 
