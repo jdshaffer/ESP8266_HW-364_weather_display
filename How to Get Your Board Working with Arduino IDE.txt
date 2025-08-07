@@ -1,0 +1,47 @@
+------------------------------------------------
+How to Get Your Board Working with Arduino IDE
+HW-364a and HW-364b
+------------------------------------------------
+
+
+Here are some detailed steps to help you get your HW-364a or HW-364b 
+development board working with Arduino IDE:
+
+
+Note:
+The HW-364a and HW-364b boards are really just ESP8266 boards with an OLED display attached.
+So, we will be adding the necessary ESP8266 setup files to Arduino IDE.
+
+
+(1) Install "Arduino IDE"
+    https://www.arduino.cc/en/software
+
+
+(2) Add the ESP8266 development board to the list of available boards in Arduino IDE:
+    - Open "Settings"
+    - In the Settings window, locate the "Additional Boards Manager URLs" field. 
+    - Add the following URL to this field: 
+      http://arduino.esp8266.com/stable/package_esp8266com_index.json
+    - Click "OK" to close the Preferences window
+    - Go to Tools > Board > Boards Manager...
+    - In the Boards Manager, type "ESP8266" in the search bar
+    - You will see an entry for "ESP8266 by ESP8266 Community"
+    - Click on this entry and then click the "Install" button to install the latest 
+      version of the ESP8266 core for Arduino IDE
+    - After the installation is complete, go to Tools > Board and scroll down to
+      the "ESP8266 Boards" section.
+    - Select "Generic ESP8266 Board"
+
+
+(3) Connect your HW-364a or HW-364b (ESP8266) board to your computer using a USB cable
+
+
+(4) Double-check that these settings in the Arduino IDE are correct:
+    - Board: "Generic ESP8266 Module"
+    - Port: Ensure the correct COM port is selected. (Mine has the keyword "USB" in it)
+    - Upload Speed: "115200"
+    - Flash Size: "1MB (FS:64KB OTA:~470KB)"
+    - Erase Flash: "Only Sktech"
+
+
+You should now be ready to go!
