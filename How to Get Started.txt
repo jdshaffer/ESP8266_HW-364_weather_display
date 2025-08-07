@@ -1,0 +1,35 @@
+------------------------------------
+How to Get Started with the HW-364a
+------------------------------------
+
+
+
+Here are some detailed steps to help you get it up and running on your HW-364a device:
+
+(1) Install "Arduino IDE"
+    https://www.arduino.cc/en/software
+
+
+(2) Add the development board to the list of available boards in the IDE
+    - Open "Settings"
+    - In the Settings window, locate the "Additional Boards Manager URLs" field. 
+    - Add the following URL to this field: 
+      http://arduino.esp8266.com/stable/package_esp8266com_index.json
+    - Click "OK" to close the Preferences window.
+    - Go to Tools > Board > Boards Manager....
+    - In the Boards Manager, type "ESP8266" into the search bar. 
+    - You will see an entry for "ESP8266 by ESP8266 Community".
+    - Click on it and then click the "Install" button to install the latest 
+      version of the ESP8266 core for Arduino.
+    - After the installation is complete, go to Tools > Board and scroll down 
+      to the "ESP8266 Boards" section.
+    - Select "Generic ESP8266 Board."
+
+(3) Connect your HW-364a (ESP8266) board to your computer
+
+(4) Double-check that these settings in the Arduino IDE are correct:
+    - Board: "Generic ESP8266 Module"
+    - Port: Ensure the correct COM port is selected. (Mine has the keyword "USB" in it)
+    - Upload Speed: "115200"
+    - Flash Size: "1MB (FS:64KB OTA:~470KB)"
+    - Erase Flash: "Only Sktech"
