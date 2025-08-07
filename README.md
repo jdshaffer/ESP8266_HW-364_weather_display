@@ -7,6 +7,6 @@ I'm a rather simple guy, and so I will slowly be uploading sample programs with 
 
 To get started, be sure to go through the `How to Get Started.txt` file, which explains how to get the Arduino IDE setup to use with your HW-364a board.
 
-### Sample Programs
+### Sample Programs (each can be found in its own sub-folder)
 * `Current Weather` -- Connects to the internet and grabs the current weather conditions for the latitude and longitude specified. Displays the update time, the temperature, the "feels like" temperature, and humidity. 
 * 
