@@ -8,6 +8,6 @@ I'm a rather simple guy, and so I will slowly be uploading sample programs with 
 To get started, be sure to go through the <a href="https://github.com/jdshaffer/sample_programs_for_HW-364a_and_HW-364b/blob/main/How%20to%20Get%20Your%20Board%20Working%20with%20Arduino%20IDE.txt" target="_blank">"How to Get Your Board Working with Arduino IDE.txt"</a> file, which explains how to get the Arduino IDE setup to use with your HW-364a or HW-364b board.
 
 ### Sample Programs (each can be found in its own sub-folder)
-* `Current Weather` -- Connects to the internet and grabs the current weather conditions for the latitude and longitude specified. Displays the update time, the temperature, the "feels like" temperature, and humidity. 
-* `Current Weather with Button` -- Same as "Current Weather", but pressing the "Flash" button toggles the text-size between normal and larger. (Note that the large text size displays less information on the screen.)
+* <a href="https://github.com/jdshaffer/sample_programs_for_HW-364a_and_HW-364b/tree/main/current_weather">Current Weather</a> -- Connects to the internet and grabs the current weather conditions for the latitude and longitude specified. Displays the update time, the temperature, the "feels like" temperature, and humidity. 
+* <a href="https://github.com/jdshaffer/sample_programs_for_HW-364a_and_HW-364b/tree/main/current_weather_with_button">Current Weather with Button</a> -- Same as "Current Weather", but pressing the "Flash" button toggles the text-size between normal and larger. (Note that the large text size displays less information on the screen.)
 * 
