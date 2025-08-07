@@ -1,0 +1,10 @@
+-------------------------------------
+About button_press.cpp
+-------------------------------------
+
+
+This program shows how to use one of the on-board buttons to interact with your program.
+
+This example will toggle the text size with each press of the "Flash" button.
+
+No other special notes are necessary for this program.
