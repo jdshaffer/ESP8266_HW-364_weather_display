@@ -24,7 +24,7 @@ Here are some detailed steps to help you get it up and running on your HW-364a d
       to the "ESP8266 Boards" section.
     - Select "Generic ESP8266 Board."
 
-(3) Connect your HW-364a (ESP8266) board to your computer
+(3) Connect your HW-364a of HW-364b (ESP8266) board to your computer
 
 (4) Double-check that these settings in the Arduino IDE are correct:
     - Board: "Generic ESP8266 Module"
