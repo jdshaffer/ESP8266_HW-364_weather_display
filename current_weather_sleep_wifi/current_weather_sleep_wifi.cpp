@@ -270,6 +270,10 @@ void setup() {
         for(;;); // Don't proceed, loop forever
     }
 
+    // Clear the screen immediately after initialization to remove any static.
+    display.clearDisplay();
+    display.display();
+
     // Initial weather fetch and display at startup
     fetch_weather();
 
