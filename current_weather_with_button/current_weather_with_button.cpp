@@ -54,8 +54,8 @@ const int debounceDelay = 50; // Milliseconds
 int text_size = 1;   // Start at text size 1 (default)
 
 // Wi-Fi Configuration
-const char* ssid = "Rivendell (2G)";
-const char* password = "7249411737";
+const char* ssid = "Add Your WiFi SSID Here";
+const char* password = "Add Your Password Here";
 
 // Weather API Configuration
 const char* server_host = "api.open-meteo.com";
