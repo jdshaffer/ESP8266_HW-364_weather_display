@@ -1,30 +1,22 @@
 //------------------------------------------------------------------------------------
-// Current Weather (with WiFi Sleep)
+// Current Weather with WiFi Sleep (v1.1)
+// for HW-364a and HW-364b development boards 
 // Jeffrey D. Shaffer
-// 2025-08-07
+// 2025-08-08
 //
 //------------------------------------------------------------------------------------
 // This program fetches the current weather conditions every 15 minutes and
 // displays it on the built-in OLED display. 
 //
-// This version puts the WiFi to sleep during the 15 minute wait to save power.
-// The power savings is ideal for running the board on a 2xAAA battery source.
+// To save energy, it puts the WiFi to sleep during the 15 minute wait period.
+// The power savings is ideal for allowing the board to run on two AAA batteries.
 //
-// This code is written for HW-364a and HW-364b development boards which
-// are really ESP8266 with built-in OLED displays.
+// Version 1.1 -- Made some cosmetic changes to the display formatting.
 //
 //------------------------------------------------------------------------------------
 // Notes:
 //    - Defaults to Suruga-ku, Shizuoka, Japan
 //    - Press the "Flash" button to toggle between normal amd larger text sizes
-//
-// Be Sure To:
-//    - Be sure to add all the necessary libraries to Arduino IDE
-//      (Check the libraries used in the #include section)
-//    - Be sure to use your own ssid and network password in the 
-//      "Wi-Fi Configuration" section below
-//    - Be sure to change the latitude and longitude for your location
-//      in the "Weather API Configuration" section below
 //
 //------------------------------------------------------------------------------------
 
@@ -93,29 +85,6 @@ const long utcOffsetInSeconds = 9 * 3600;
 NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
 
 
-// Function to convert wind direction (degrees) to compass directions
-const char* convert_wind_to_compass(double wind_dir) {
-    if (wind_dir >= 0 && wind_dir < 22.5) return "N";
-    if (wind_dir >= 22.5 && wind_dir < 45) return "NNE";
-    if (wind_dir >= 45 && wind_dir < 67.5) return "NE";
-    if (wind_dir >= 67.5 && wind_dir < 90) return "ENE";
-    if (wind_dir >= 90 && wind_dir < 112.5) return "E";
-    if (wind_dir >= 112.5 && wind_dir < 135) return "ESE";
-    if (wind_dir >= 135 && wind_dir < 157.5) return "SE";
-    if (wind_dir >= 157.5 && wind_dir < 180) return "SSE";
-    if (wind_dir >= 180 && wind_dir < 202.5) return "S";
-    if (wind_dir >= 202.5 && wind_dir < 225) return "SSW";
-    if (wind_dir >= 225 && wind_dir < 247.5) return "SW";
-    if (wind_dir >= 247.5 && wind_dir < 270) return "WSW";
-    if (wind_dir >= 270 && wind_dir < 292.5) return "W";
-    if (wind_dir >= 292.5 && wind_dir < 315) return "WNW";
-    if (wind_dir >= 315 && wind_dir < 337.5) return "NW";
-    if (wind_dir >= 337.5 && wind_dir < 360) return "NNW";
-    if (wind_dir == 360) return "N";
-    return "Unknown";
-}
-
-
 // Function to display the weather data
 void display_weather(){
     display.clearDisplay();
@@ -124,23 +93,23 @@ void display_weather(){
     display.setTextColor(SSD1306_WHITE);
 
     if (text_size == 1) {   // If the text should be normal size
-        display.printf("Updated: %s\n", formattedTime.c_str());
-        display.printf("Temp:    %.1f c\n", temp_c);
-        display.printf("Feels:   %.1f c\n", feels_like_c);
-        display.printf("Hum:     %.1f%%\n", humidity_percent);
-        display.printf("Press:   %.1f hPa\n", pressure_hpa);
-        display.printf("Wind:    %.1f mps %s\n", wind_speed_kph/3.6, convert_wind_to_compass(wind_direction_deg));   // Convert kph to mps inline
-        display.printf("Cloud:   %.1f%%\n", cloud_cover_percent);
-        display.printf("Precip:  %.1f mm\n", precipitation_mm);
+        display.printf("  Temp:    %.1f c\n", temp_c);
+        display.printf("  Feels:   %.1f c\n", feels_like_c);
+        display.printf("  Hum:     %.1f%%\n", humidity_percent);
+        display.printf("  Press:   %.1f hPa\n", pressure_hpa);
+        display.printf("  Wind:    %.1f mps\n", wind_speed_kph/3.6);   // Convert kph to mps inline
+        display.printf("  Cloud:   %.1f%%\n", cloud_cover_percent);
+        display.printf("\n");
+        display.printf("  (Updated %s)  \n", formattedTime.c_str());
 
         // Update the screen with current data
         display.display();
 
     } else {   // If the text should be double size
-        display.printf("Time %s\n", formattedTime.c_str());
-        display.printf("Temp %.1f\n", temp_c);
-        display.printf("Feel %.1f\n", feels_like_c);
-        display.printf("Hum  %.0f%%\n", humidity_percent);
+        display.printf("Temp  %.1f\n", temp_c);
+        display.printf("Feel  %.1f\n", feels_like_c);
+        display.printf("Hum   %.0f %%\n", humidity_percent);
+        display.printf("  (%s) \n", formattedTime.c_str());
 
         // Update the screen with current data
         display.display();
@@ -257,7 +226,7 @@ void fetch_weather(){
 }
 
 
-void setup() {
+void setup() {    
     // Configure the GPIO pin (Flash button) as an input
     pinMode(buttonPin, INPUT_PULLUP);
 
