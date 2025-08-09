@@ -1,8 +1,8 @@
 //------------------------------------------------------------------------------------
-// Current Weather with WiFi Sleep (v1.1)
+// Current Weather with WiFi Sleep (v1.2)
 // for HW-364a and HW-364b development boards 
 // Jeffrey D. Shaffer
-// 2025-08-08
+// 2025-08-09
 //
 //------------------------------------------------------------------------------------
 // This program fetches the current weather conditions every 15 minutes and
@@ -13,10 +13,17 @@
 //
 // Version 1.1 -- Made some cosmetic changes to the display formatting.
 //
+// Version 1.2 -- Prettified the data being displayed
+//             -- Added display feedback to the boot and network connection process
+//             -- Added code to attempt a set number of wi-fi connection attempts
+//             -- Added code to fail gracefully upon connection failure
+//                (It displays a helpful warning and halts the program)
+//
 //------------------------------------------------------------------------------------
 // Notes:
 //    - Defaults to Suruga-ku, Shizuoka, Japan
 //    - Press the "Flash" button to toggle between normal amd larger text sizes
+//    - Max number of connection attempts configurable in "Wi-Fi Configuration"
 //
 //------------------------------------------------------------------------------------
 
@@ -37,15 +44,18 @@
 #include <WiFiUdp.h>
 
 // OLED Display Configuration
-#define SCREEN_WIDTH 128      // OLED display width, in pixels
-#define SCREEN_HEIGHT 64      // OLED display height, in pixels
-#define OLED_RESET -1         // Reset pin # (or -1 if sharing Arduino reset pin)
-#define SCREEN_ADDRESS 0x3C   // The I2C address of the display
-#define OLED_SDA 14           // Correct SDA pin for your wiring (D6 on most boards)
-#define OLED_SCL 12           // Correct SCL pin for your wiring (D5 on most boards)
-#define REFRESH_INTERVAL 15   // How often (in minutes) to refresh the data
+#define SCREEN_WIDTH 128          // OLED display width, in pixels
+#define SCREEN_HEIGHT 64          // OLED display height, in pixels
+#define OLED_RESET -1             // Reset pin # (or -1 if sharing Arduino reset pin)
+#define SCREEN_ADDRESS 0x3C       // The I2C address of the display
+#define OLED_SDA 14               // Correct SDA pin for your wiring (D6 on most boards)
+#define OLED_SCL 12               // Correct SCL pin for your wiring (D5 on most boards)
+#define REFRESH_INTERVAL 15       // How often (in minutes) to refresh the data
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
+
+// Configurable Message to Display at Boot
+const char* boot_message = "Booting up...";
 
 // Button-press Configuration
 const int buttonPin = 0;          // Use the "Flash" butoon (GPIO0)
@@ -56,13 +66,14 @@ int text_size = 1;                // Start at text size 1 (default)
 // Wi-Fi Configuration
 const char* ssid = "YOUR SSID GOES HERE";
 const char* password = "YOUR WIFI PASSWORD GOES HERE";
+int maxAttempts = 3;              // Max number of wi-fi connection attempts to try
 
 // Weather API Configuration
 const char* server_host = "api.open-meteo.com";
 const char* server_path = "/v1/forecast?latitude=34.9717465&longitude=138.378599&current=temperature_2m,relative_humidity_2m,apparent_temperature,is_day,precipitation,weather_code,cloud_cover,surface_pressure,wind_speed_10m,wind_direction_10m&timezone=Asia%2FTokyo&models=jma_seamless";
 
-// Variables to store WX data
-// (Global on purpose, so display_weather() can access it every time the button is pressed)
+// Variables for Storing WX Data
+// Global on purpose, so display_weather() can access it every time the button is pressed
 double temp_c;
 double feels_like_c;
 double humidity_percent;
@@ -73,11 +84,11 @@ double cloud_cover_percent;
 double precipitation_mm;
 String formattedTime;
 
-// Variables for the timer
+// Variables for the Timer
 unsigned long previousMillis = 0;
 const long interval = REFRESH_INTERVAL * 60 * 1000; // 2 minutes in milliseconds
 
-// NTPClient configuration
+// NTPClient Configuration
 // The second argument is for the timezone offset in seconds.
 // Japan Standard Time (JST) is UTC+9, so 9 * 3600 = 32400 seconds.
 WiFiUDP ntpUDP;
@@ -85,7 +96,7 @@ const long utcOffsetInSeconds = 9 * 3600;
 NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
 
 
-// Function to display the weather data
+// Function to Display the Pre-fetched Weather Data
 void display_weather(){
     display.clearDisplay();
     display.setCursor(0,0);
@@ -93,57 +104,79 @@ void display_weather(){
     display.setTextColor(SSD1306_WHITE);
 
     if (text_size == 1) {   // If the text should be normal size
-        display.printf("  Temp:    %.1f c\n", temp_c);
-        display.printf("  Feels:   %.1f c\n", feels_like_c);
-        display.printf("  Hum:     %.1f%%\n", humidity_percent);
-        display.printf("  Press:   %.1f hPa\n", pressure_hpa);
-        display.printf("  Wind:    %.1f mps\n", wind_speed_kph/3.6);   // Convert kph to mps inline
-        display.printf("  Cloud:   %.1f%%\n", cloud_cover_percent);
-        display.printf("\n");
-        display.printf("  (Updated %s)  \n", formattedTime.c_str());
-
-        // Update the screen with current data
+        display.printf("  Temp    %6.1f C\n", temp_c);
+        display.printf("  Feels   %6.1f C\n", feels_like_c);
+        display.printf("  Hum     %6.1f %%\n", humidity_percent);
+        display.printf("  Press   %4.1f hPa\n", pressure_hpa);
+        display.printf("  Wind    %6.1f mps\n", wind_speed_kph/3.6);   // Convert kph to mps inline
+        display.printf("  Cloud   %6.1f %%\n", cloud_cover_percent);
+        display.println();
+        display.printf("   (Updated %s)     \n", formattedTime.c_str());
         display.display();
 
     } else {   // If the text should be double size
-        display.printf("Temp  %.1f\n", temp_c);
-        display.printf("Feel  %.1f\n", feels_like_c);
-        display.printf("Hum   %.0f %%\n", humidity_percent);
+        display.printf("Temp  %2.1f\n", temp_c);
+        display.printf("Feel  %2.1f\n", feels_like_c);
+        display.printf("Hum   %2.0f %%\n", humidity_percent);
         display.printf("  (%s) \n", formattedTime.c_str());
-
-        // Update the screen with current data
         display.display();
     }
 }
 
 
-// Function to fetch the weather data
+// Function to Connect to the Internet and Fetch the Weather Data
 void fetch_weather(){
     // Wake up Wi-Fi and wait for it to turn on
     WiFi.forceSleepWake();
     delay(50);
 
-    // Reconnect to Wi-Fi
-    WiFi.begin(ssid, password);
-    
-    int attempts = 0;
-    while (WiFi.status() != WL_CONNECTED && attempts < 20) {
-        delay(500);
-        Serial.print(".");
-        attempts++;
-    }
+    // Helper variable used to denote if we are connected or not
+    bool connected = false;
 
-    if (WiFi.status() != WL_CONNECTED) {
+    // Attempt to connect to wi-fi  (maxAttempts configured at top of program)
+    for (int attempt = 1; attempt <= maxAttempts; attempt++) {
+        // Begin a connection attempt
+        WiFi.begin(ssid, password);
         display.clearDisplay();
         display.setCursor(0,0);
-        display.println("Failed to connect!");
+        display.setTextSize(1);   // Use small text for connection reports
+        display.printf("Connecting to WiFi\n");
+        display.printf("Attempt %d of %d\n", attempt, maxAttempts);
         display.display();
-        delay(3000); // Wait 3 seconds to see the error message
-        
-        // Tell Wi-Fi to sleep
-        WiFi.forceSleepBegin();
-        delay(100);
-        return;
+
+        // Wait for up to 10 seconds for a connection
+        long start_time = millis();
+        while (WiFi.status() != WL_CONNECTED && (millis() - start_time) < 10000) {
+            delay(500);
+            display.printf(".");
+            display.display();
+        }
+
+        if (WiFi.status() == WL_CONNECTED) {
+            connected = true;
+            break; // Exit the "attempt connection" loop if connected
+        }
+    }
+
+    // When connection fails after retries, give an error message and halt the program
+    if (!connected) {
+        // If not connected after all attempts, display a final error
+        display.clearDisplay();
+        display.setCursor(0, 0);
+        display.setTextSize(1);  // Use small text for connection reports
+        display.println(" Failed to connect  ");
+        display.printf ("   after %d tries   \n", maxAttempts);
+        display.println("--------------------");
+        display.println("Try checking        ");
+        display.println("  - Wi-Fi SSID      ");
+        display.println("  - Wi-Fi Password  ");
+        display.println("  - AAA batteries   ");
+        display.display();
+
+        // Use a while loop to keep the message on the screen and halt execution
+        while(true) {
+            delay(1000); // Prevents the program from restarting or doing anything else
+        }
     }
 
     // Now that Wi-Fi is connected, proceed with fetching the time and weather
@@ -169,7 +202,7 @@ void fetch_weather(){
 
     display.clearDisplay();
     display.setCursor(0,0);
-    display.setTextSize(text_size);
+    display.setTextSize(text_size);   // Use user-set size (conteolled by button)
     display.setTextColor(SSD1306_WHITE);
     display.println("Fetching");
     display.println("WX data...");
@@ -239,9 +272,15 @@ void setup() {
         for(;;); // Don't proceed, loop forever
     }
 
-    // Clear the screen immediately after initialization to remove any static.
+    // Clear the screen and print a little boot message
+    // (Set the message in the configuration section at the top.)
     display.clearDisplay();
+    display.setCursor(0,0);
+    display.setTextSize(1);  // Use small text for boot message
+    display.setTextColor(SSD1306_WHITE);
+    display.printf("%s", boot_message);
     display.display();
+    delay(1000);   // Leave the message up long enough to be seen
 
     // Initial weather fetch and display at startup
     fetch_weather();
