@@ -18,6 +18,8 @@
 //             -- Added code to attempt a set number of wi-fi connection attempts
 //             -- Added code to fail gracefully upon connection failure
 //                (It displays a helpful warning and halts the program)
+//             -- Added code to force the WiFi to completely reset before connecting
+//                (I'm having wi-fi issues after a low-power related wi-fi crash)
 //
 //------------------------------------------------------------------------------------
 // Notes:
@@ -64,8 +66,8 @@ const int debounceDelay = 200;    // Debounce delay duration in milliseconds
 int text_size = 1;                // Start at text size 1 (default)
 
 // Wi-Fi Configuration
-const char* ssid = "YOUR SSID GOES HERE";
-const char* password = "YOUR WIFI PASSWORD GOES HERE";
+const char* ssid = "Rivendell (2G)";
+const char* password = "7249411737";
 int maxAttempts = 3;              // Max number of wi-fi connection attempts to try
 
 // Weather API Configuration
@@ -129,6 +131,7 @@ void fetch_weather(){
     // Wake up Wi-Fi and wait for it to turn on
     WiFi.forceSleepWake();
     delay(50);
+    WiFi.disconnect(true);  // Reset of the Wi-Fi stack (stored SSID / Password)
 
     // Helper variable used to denote if we are connected or not
     bool connected = false;
