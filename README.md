@@ -5,11 +5,12 @@ This will (hopefully) grow into a small collection of sample programs for the HW
 <table style="width: 80%;">
   <tr>
     <td width="50%">
-      <img src="https://github.com/jdshaffer/sample_programs_for_HW-364a_and_HW-364b/blob/main/current_weather.jpg"        width="100%">
-      <img src="https://github.com/jdshaffer/sample_programs_for_HW-364a_and_HW-364b/blob/main/current_weather_button.jpg" width="100%">
+      <img src="current_weather.jpg" width="100%">
+      <img src="current_weather_button.jpg" width="100%">
     </td>
     <td width="50%">
-      <img src="https://github.com/jdshaffer/sample_programs_for_HW-364a_and_HW-364b/blob/main/battery_powered.jpg" width="100%">
+      <img src="battery_powered1.jpg" width="100%">
+      <img src="battery_powered2.jpg" width="100%">
     </td>
   </tr>
 </table>
