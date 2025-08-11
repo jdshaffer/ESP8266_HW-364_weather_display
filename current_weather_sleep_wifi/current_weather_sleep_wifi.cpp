@@ -68,8 +68,8 @@ const int debounceDelay = 200;    // Debounce delay duration in milliseconds
 int user_selected_text_size = 1;  // Start at text size 1 (default)
 
 // Wi-Fi Configuration
-const char* ssid = "Rivendell (2G)";
-const char* password = "7249411737";
+const char* ssid = "YOUR SSID GOES HERE";
+const char* password = "YOUR WIFI PASSWORD GOES HERE";
 int maxAttempts = 3;              // Max number of wi-fi connection attempts to try
 
 // Weather API Configuration
@@ -176,8 +176,8 @@ void fetch_weather(){
         display.clearDisplay();
         display.setCursor(0,0);
         display.setTextSize(1);   // Use small text for connection reports
-        display.printf("Connecting to WiFi\n");
-        display.printf("Attempt %d of %d\n", attempt, maxAttempts);
+        display.printf(" Connecting to WiFi \n");
+        display.printf("   Attempt %d of %d\n", attempt, maxAttempts);
         display.display();
 
         // Wait for up to 10 seconds for a connection
@@ -311,7 +311,7 @@ void setup() {
     if (debugging){
         display_message(" Booting into \n debug mode...\n", 1, 3);
     } else {
-        display_message("Booting up...", 1, 3);
+        display_message(" Booting into \n normal mode...", 1, 3);
     }
 
     // Initial weather fetch and display at startup
