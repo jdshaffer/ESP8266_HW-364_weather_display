@@ -25,6 +25,7 @@
 //
 //------------------------------------------------------------------------------------
 
+
 #include <Arduino.h>
 #include <ESP8266WiFi.h>
 #include <ESP8266HTTPClient.h>
@@ -67,8 +68,8 @@ const int debounceDelay = 200;    // Debounce delay duration in milliseconds
 int user_selected_text_size = 1;  // Start at text size 1 (default)
 
 // Wi-Fi Configuration
-const char* ssid = "YOUR SSID GOES HERE";
-const char* password = "YOUR WIFI PASSWORD GOES HERE";
+const char* ssid = "Rivendell (2G)";
+const char* password = "7249411737";
 int maxAttempts = 3;              // Max number of wi-fi connection attempts to try
 
 // Weather API Configuration
@@ -90,7 +91,7 @@ String formattedTime;
 // Variables for the Timer
 unsigned long previousMillis = 0;
 // (if debugging is TRUE, use 1*60*1000, else use REFRESH_INTERVAL*60*1000)
-const long interval = debugging ? DEBUG_REFRESH_INTERVAL * 60 * 1000 : REFRESH_INTERVAL * 60 * 1000;
+long interval = REFRESH_INTERVAL * 60 * 1000;
 
 // NTPClient Configuration
 // The second argument is for the timezone offset in seconds.
@@ -301,6 +302,7 @@ void setup() {
     while (millis() - startTime < 3000) { // Wait for 3 seconds
         if (digitalRead(buttonPin) == LOW) {
             debugging = true;
+            interval = DEBUG_REFRESH_INTERVAL * 60 * 1000;
             break;
         }
     }
