@@ -1,31 +1,21 @@
 //------------------------------------------------------------------------------------
-// Current Weather with WiFi Sleep (v1.2)
+// Weather Display (v1.3)
 // for HW-364a and HW-364b development boards 
 // Jeffrey D. Shaffer
-// 2025-08-09
+// 2025-08-11
 //
 //------------------------------------------------------------------------------------
-// This program fetches the current weather conditions every 15 minutes and
+// This program fetches the current weather conditions every 30 minutes and
 // displays it on the built-in OLED display. 
 //
-// To save energy, it puts the WiFi to sleep during the 15 minute wait period.
-// The power savings is ideal for allowing the board to run on two AAA batteries.
-//
-// Version 1.1 -- Made some cosmetic changes to the display formatting.
-//
-// Version 1.2 -- Prettified the data being displayed
-//             -- Added display feedback to the boot and network connection process
-//             -- Added code to attempt a set number of wi-fi connection attempts
-//             -- Added code to fail gracefully upon connection failure
-//                (It displays a helpful warning and halts the program)
-//             -- Added code to force the WiFi to completely reset before connecting
-//                (I'm having wi-fi issues after a low-power related wi-fi crash)
+// To save energy, it puts the WiFi to sleep during the wait period. This
+// power savings is ideal for allowing the board to run on two AAA batteries.
+// (Google Gemini estimates 390 hours of battery life when run on two AAA batteries.)
 //
 //------------------------------------------------------------------------------------
 // Notes:
 //    - Defaults to Suruga-ku, Shizuoka, Japan
-//    - Press the "Flash" button to toggle between normal amd larger text sizes
-//    - Max number of connection attempts configurable in "Wi-Fi Configuration"
+//    - Many settings are configurable. Check the code.
 //
 //------------------------------------------------------------------------------------
 
@@ -52,18 +42,23 @@
 #define SCREEN_ADDRESS 0x3C       // The I2C address of the display
 #define OLED_SDA 14               // Correct SDA pin for your wiring (D6 on most boards)
 #define OLED_SCL 12               // Correct SCL pin for your wiring (D5 on most boards)
-#define REFRESH_INTERVAL 15       // How often (in minutes) to refresh the data
+#define REFRESH_INTERVAL 30       // How often (in minutes) to refresh the data
+#define DEBUG_REFRESH_INTERVAL 5  // How often (in minutes) to refresh the data when debugging
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-// Configurable Message to Display at Boot
-const char* boot_message = "Booting up...";
+// Place to store display messages within the program
+// (large enough to hold an entire screen's worth of text plus newlines)
+char message[162];  
+
+// Helper variable used for debugging
+bool debugging = true;
 
 // Button-press Configuration
 const int buttonPin = 0;          // Use the "Flash" butoon (GPIO0)
 unsigned long lastPressTime = 0;  // Used for timing the debounce delay
 const int debounceDelay = 200;    // Debounce delay duration in milliseconds
-int text_size = 1;                // Start at text size 1 (default)
+int user_selected_text_size = 1;                // Start at text size 1 (default)
 
 // Wi-Fi Configuration
 const char* ssid = "Rivendell (2G)";
@@ -88,7 +83,8 @@ String formattedTime;
 
 // Variables for the Timer
 unsigned long previousMillis = 0;
-const long interval = REFRESH_INTERVAL * 60 * 1000; // 2 minutes in milliseconds
+// (if debugging is TRUE, use 1*60*1000, else use REFRESH_INTERVAL*60*1000)
+const long interval = debugging ? DEBUG_REFRESH_INTERVAL * 60 * 1000 : REFRESH_INTERVAL * 60 * 1000;
 
 // NTPClient Configuration
 // The second argument is for the timezone offset in seconds.
@@ -97,15 +93,25 @@ WiFiUDP ntpUDP;
 const long utcOffsetInSeconds = 9 * 3600;
 NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
 
+// Function to display single-line messages (boot, debugging, etc.)
+void display_message(const char* MESSAGE, const int MESSAGE_TEXT_SIZE){
+    display.clearDisplay();
+    display.setCursor(0,0);
+    display.setTextSize(MESSAGE_TEXT_SIZE);
+    display.setTextColor(SSD1306_WHITE);
+    display.printf("%s", MESSAGE);
+    display.display();
+    delay(1000);   // Leave the message up long enough to be seen
+}
 
 // Function to Display the Pre-fetched Weather Data
 void display_weather(){
     display.clearDisplay();
     display.setCursor(0,0);
-    display.setTextSize(text_size);
+    display.setTextSize(user_selected_text_size);
     display.setTextColor(SSD1306_WHITE);
 
-    if (text_size == 1) {   // If the text should be normal size
+    if (user_selected_text_size == 1) {   // If the text should be normal size
         display.printf("  Temp    %6.1f C\n", temp_c);
         display.printf("  Feels   %6.1f C\n", feels_like_c);
         display.printf("  Hum     %6.1f %%\n", humidity_percent);
@@ -131,7 +137,19 @@ void fetch_weather(){
     // Wake up Wi-Fi and wait for it to turn on
     WiFi.forceSleepWake();
     delay(50);
-    WiFi.disconnect(true);  // Reset of the Wi-Fi stack (stored SSID / Password)
+
+    if (debugging){
+        display_message("Waking WiFi...\n", 1);
+    }
+
+    // Completely turn off the Wi-Fi before trying to reconnect
+    WiFi.mode(WIFI_OFF);
+    WiFi.disconnect(true);
+    WiFi.mode(WIFI_STA);    // Set the Wi-Fi mode back to station mode
+
+    if (debugging){
+        display_message("Resetting WiFi...\n", 1);
+    }
 
     // Helper variable used to denote if we are connected or not
     bool connected = false;
@@ -157,20 +175,27 @@ void fetch_weather(){
 
         if (WiFi.status() == WL_CONNECTED) {
             connected = true;
+            if (debugging){
+                display_message("Connected to router!\n", 1);
+            }
             break; // Exit the "attempt connection" loop if connected
         }
     }
 
     // When connection fails after retries, give an error message and halt the program
     if (!connected) {
-        // If not connected after all attempts, display a final error
+        // It if refuses to connect, but the WiFi back to sleep (to save battery)
+        WiFi.forceSleepBegin();
+
+        // Tell the user we couldn't connect and display some suggestions
         display.clearDisplay();
         display.setCursor(0, 0);
         display.setTextSize(1);  // Use small text for connection reports
         display.println(" Failed to connect  ");
         display.printf ("   after %d tries   \n", maxAttempts);
         display.println("--------------------");
-        display.println("Try checking        ");
+        display.println("Try rebooting       ");
+        display.println("or try checking     ");
         display.println("  - Wi-Fi SSID      ");
         display.println("  - Wi-Fi Password  ");
         display.println("  - AAA batteries   ");
@@ -203,13 +228,7 @@ void fetch_weather(){
     client.setInsecure(); // Accept all certificates (for convenience)
     HTTPClient http;
 
-    display.clearDisplay();
-    display.setCursor(0,0);
-    display.setTextSize(text_size);   // Use user-set size (conteolled by button)
-    display.setTextColor(SSD1306_WHITE);
-    display.println("Fetching");
-    display.println("WX data...");
-    display.display();
+    display_message(" Fetching WX Data...", user_selected_text_size);
 
     if (http.begin(client, server_host, 443, server_path)) {
         int httpCode = http.GET();
@@ -232,27 +251,16 @@ void fetch_weather(){
 
                     display_weather();
                 } else {
-                    display.clearDisplay();
-                    display.setCursor(0,0);
-                    display.println("JSON Error!");
-                    display.println(error.c_str());
-                    display.display();
-                    delay(3000); // Wait 3 seconds to see the error message
+                    display_message("JSON Error!\n", 1);
+                    delay(2000);   // Delay a little longer (default is 1s, adding 2s
                 }
             } else {
-                display.clearDisplay();
-                display.setCursor(0,0);
-                display.println("HTTP Error!");
-                display.println(http.errorToString(httpCode).c_str());
-                display.display();
-                delay(3000); // Wait 3 seconds to see the error message
+                display_message("HTTP Error!\n", 1);
+                delay(2000);   // Delay a little longer (default is 1s, adding 2s
             }
         } else {
-            display.clearDisplay();
-            display.setCursor(0,0);
-            display.println("Connection error!");
-            display.display();
-            delay(3000); // Wait 3 seconds to see the error message
+            display_message("Connection error!\n", 1);
+            delay(2000);   // Delay a little longer (default is 1s, adding 2s
         }
         http.end();
     }
@@ -276,14 +284,7 @@ void setup() {
     }
 
     // Clear the screen and print a little boot message
-    // (Set the message in the configuration section at the top.)
-    display.clearDisplay();
-    display.setCursor(0,0);
-    display.setTextSize(1);  // Use small text for boot message
-    display.setTextColor(SSD1306_WHITE);
-    display.printf("%s", boot_message);
-    display.display();
-    delay(1000);   // Leave the message up long enough to be seen
+    display_message("Booting up...", 1);
 
     // Initial weather fetch and display at startup
     fetch_weather();
@@ -315,10 +316,10 @@ void loop() {
     lastPressTime = currentTime;
 
     // Toggle the text size state
-    if (text_size == 1) {   // If currently size 1, set to 2
-      text_size = 2;
+    if (user_selected_text_size == 1) {   // If currently size 1, set to 2
+      user_selected_text_size = 2;
     } else {                // If not currently size 1, set to 1
-      text_size = 1;
+      user_selected_text_size = 1;
     }
 
     // Display the weather data with new text size
