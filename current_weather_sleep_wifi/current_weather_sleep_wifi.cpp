@@ -6,16 +6,22 @@
 //
 //------------------------------------------------------------------------------------
 // This program fetches the current weather conditions every 30 minutes and
-// displays it on the built-in OLED display. 
-//
-// To save energy, it puts the WiFi to sleep during the wait period. This
-// power savings is ideal for allowing the board to run on two AAA batteries.
-// (Google Gemini estimates 390 hours of battery life when run on two AAA batteries.)
+// displays it on the built-in OLED display. To save energy, it puts the WiFi
+// to sleep between data fetches.
 //
 //------------------------------------------------------------------------------------
 // Notes:
 //    - Defaults to Suruga-ku, Shizuoka, Japan
-//    - Many settings are configurable. Check the code.
+//    - Many settings are configurable
+//    - Don't forget to add your SSID and Wi-Fi password!
+//
+//------------------------------------------------------------------------------------
+// Warnings:
+//    - Power-draw is so small, USB-batteries may automatically power down
+//    - Running from 2 AAAs will require a capacitor soldered inline between the
+//      battery pack and the board. I'm using a 25V 240uF capacitor, but anything
+//      over 10V is probably OK. 
+//    - Google Gemini estimates 390 hours of use when running on two AAAs.
 //
 //------------------------------------------------------------------------------------
 
@@ -43,26 +49,26 @@
 #define OLED_SDA 14               // Correct SDA pin for your wiring (D6 on most boards)
 #define OLED_SCL 12               // Correct SCL pin for your wiring (D5 on most boards)
 #define REFRESH_INTERVAL 30       // How often (in minutes) to refresh the data
-#define DEBUG_REFRESH_INTERVAL 5  // How often (in minutes) to refresh the data when debugging
+#define DEBUG_REFRESH_INTERVAL 2  // How often (in minutes) to refresh the data when debugging
 
 Adafruit_SSD1306 display(SCREEN_WIDTH, SCREEN_HEIGHT, &Wire, OLED_RESET);
 
-// Place to store display messages within the program
-// (large enough to hold an entire screen's worth of text plus newlines)
+// Make an array to store display messages
+// Will hold an entire screen of text + newlines.
 char message[162];  
 
-// Helper variable used for debugging
-bool debugging = true;
+// Helper variable used for debugging (true/false)
+bool debugging = false;
 
 // Button-press Configuration
 const int buttonPin = 0;          // Use the "Flash" butoon (GPIO0)
 unsigned long lastPressTime = 0;  // Used for timing the debounce delay
 const int debounceDelay = 200;    // Debounce delay duration in milliseconds
-int user_selected_text_size = 1;                // Start at text size 1 (default)
+int user_selected_text_size = 1;  // Start at text size 1 (default)
 
 // Wi-Fi Configuration
-const char* ssid = "Rivendell (2G)";
-const char* password = "7249411737";
+const char* ssid = "YOUR SSID GOES HERE";
+const char* password = "YOUR WIFI PASSWORD GOES HERE";
 int maxAttempts = 3;              // Max number of wi-fi connection attempts to try
 
 // Weather API Configuration
@@ -94,14 +100,14 @@ const long utcOffsetInSeconds = 9 * 3600;
 NTPClient timeClient(ntpUDP, "pool.ntp.org", utcOffsetInSeconds);
 
 // Function to display single-line messages (boot, debugging, etc.)
-void display_message(const char* MESSAGE, const int MESSAGE_TEXT_SIZE){
+void display_message(const char* MESSAGE, const int MESSAGE_TEXT_SIZE, const int MESSAGE_DURATION){
     display.clearDisplay();
     display.setCursor(0,0);
     display.setTextSize(MESSAGE_TEXT_SIZE);
     display.setTextColor(SSD1306_WHITE);
     display.printf("%s", MESSAGE);
     display.display();
-    delay(1000);   // Leave the message up long enough to be seen
+    delay(MESSAGE_DURATION * 1000);   // Convert input seconds to milliseconds
 }
 
 // Function to Display the Pre-fetched Weather Data
@@ -119,14 +125,22 @@ void display_weather(){
         display.printf("  Wind    %6.1f mps\n", wind_speed_kph/3.6);   // Convert kph to mps inline
         display.printf("  Cloud   %6.1f %%\n", cloud_cover_percent);
         display.println();
-        display.printf("   (Updated %s)     \n", formattedTime.c_str());
+        if (!debugging){   // If not debugging, display as normal
+            display.printf("   (Updated %s)\n", formattedTime.c_str());
+        } else {           // If debugging, display a dot in the corner
+            display.printf("   (Updated %s)  .\n", formattedTime.c_str());
+        }
         display.display();
 
     } else {   // If the text should be double size
         display.printf("Temp  %2.1f\n", temp_c);
         display.printf("Feel  %2.1f\n", feels_like_c);
         display.printf("Hum   %2.0f %%\n", humidity_percent);
-        display.printf("  (%s) \n", formattedTime.c_str());
+        if (!debugging){   // If not debugging, display as normal
+            display.printf("  (%s) \n", formattedTime.c_str());
+        } else {           // If debugging, display a dot in the corner
+            display.printf("  (%s).\n", formattedTime.c_str());
+        }
         display.display();
     }
 }
@@ -139,7 +153,7 @@ void fetch_weather(){
     delay(50);
 
     if (debugging){
-        display_message("Waking WiFi...\n", 1);
+        display_message("Waking WiFi...\n", 1, 2);
     }
 
     // Completely turn off the Wi-Fi before trying to reconnect
@@ -148,7 +162,7 @@ void fetch_weather(){
     WiFi.mode(WIFI_STA);    // Set the Wi-Fi mode back to station mode
 
     if (debugging){
-        display_message("Resetting WiFi...\n", 1);
+        display_message("Resetting WiFi...\n", 1, 2);
     }
 
     // Helper variable used to denote if we are connected or not
@@ -176,9 +190,10 @@ void fetch_weather(){
         if (WiFi.status() == WL_CONNECTED) {
             connected = true;
             if (debugging){
-                display_message("Connected to router!\n", 1);
+                display_message("Connected to router!\n", 1, 2);
             }
-            break; // Exit the "attempt connection" loop if connected
+            delay(500);   // Give the network stack a little time to finish connecting
+            break;        // Exit the "attempt connection" loop if connected
         }
     }
 
@@ -228,7 +243,7 @@ void fetch_weather(){
     client.setInsecure(); // Accept all certificates (for convenience)
     HTTPClient http;
 
-    display_message(" Fetching WX Data...", user_selected_text_size);
+    display_message(" Fetching WX Data...", user_selected_text_size, 1);
 
     if (http.begin(client, server_host, 443, server_path)) {
         int httpCode = http.GET();
@@ -251,16 +266,13 @@ void fetch_weather(){
 
                     display_weather();
                 } else {
-                    display_message("JSON Error!\n", 1);
-                    delay(2000);   // Delay a little longer (default is 1s, adding 2s
+                    display_message("JSON Error!\n", 1, 3);
                 }
             } else {
-                display_message("HTTP Error!\n", 1);
-                delay(2000);   // Delay a little longer (default is 1s, adding 2s
+                display_message("HTTP Error!\n", 1, 3);
             }
         } else {
-            display_message("Connection error!\n", 1);
-            delay(2000);   // Delay a little longer (default is 1s, adding 2s
+            display_message("Connection error!\n", 1, 3);
         }
         http.end();
     }
@@ -274,7 +286,7 @@ void setup() {
     // Configure the GPIO pin (Flash button) as an input
     pinMode(buttonPin, INPUT_PULLUP);
 
-    // Initialize I2C communication on the correct pins
+    // Initialize I2C (display) communication on the correct pins
     Wire.begin(OLED_SDA, OLED_SCL);
 
     // Initialize the OLED display with the correct address
@@ -283,8 +295,22 @@ void setup() {
         for(;;); // Don't proceed, loop forever
     }
 
-    // Clear the screen and print a little boot message
-    display_message("Booting up...", 1);
+    // Ask the user if the want to boot into debug mode
+    unsigned long startTime = millis();
+    display_message(" Press FLASH to boot\n into debug mode", 1, 0);
+    while (millis() - startTime < 3000) { // Wait for 3 seconds
+        if (digitalRead(buttonPin) == LOW) {
+            debugging = true;
+            break;
+        }
+    }
+
+    // Clear the screen and print a boot message
+    if (debugging){
+        display_message(" Booting into \n debug mode...\n", 1, 3);
+    } else {
+        display_message("Booting up...", 1, 3);
+    }
 
     // Initial weather fetch and display at startup
     fetch_weather();
