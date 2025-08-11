@@ -5,12 +5,12 @@ This will (hopefully) grow into a small collection of sample programs for the HW
 <table style="width: 80%;">
   <tr>
     <td width="50%">
-      <img src="current_weather.jpg" width="100%">
-      <img src="current_weather_button.jpg" width="100%">
+      <img src="images/weather_display1.jpg" width="100%">
+      <img src="images/weather_display2.jpg" width="100%">
     </td>
     <td width="50%">
-      <img src="battery_powered1.jpg" width="100%">
-      <img src="battery_powered2.jpg" width="100%">
+      <img src="images/battery_powered1.jpg" width="100%">
+      <img src="images/battery_powered2.jpg" width="100%">
     </td>
   </tr>
 </table>
