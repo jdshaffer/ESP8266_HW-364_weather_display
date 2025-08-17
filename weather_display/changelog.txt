@@ -54,4 +54,13 @@ Version 1.3.1
 
 Version 1.4
    - Changed the behavior when it cannot connect to the network.
-     Now it displays a message, waits 10 minutes, then tries again.
+     Now it displays a message, waits 5 minutes, then tries again.
+
+
+
+Version 1.4a
+   - Removed the debugging code (I don't think it's necessary anymore)
+   - Cleaned up the code:
+        - Split the get_weather() function into two two functions:
+          connect_to_wifi()  and  fetch_and_display_weather().
+        - Moved more control back to loop() and away from the functions
