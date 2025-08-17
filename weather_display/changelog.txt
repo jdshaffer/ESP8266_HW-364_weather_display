@@ -58,9 +58,15 @@ Version 1.4
 
 
 
-Version 1.4a
-   - Removed the debugging code (I don't think it's necessary anymore)
-   - Cleaned up the code:
-        - Split the get_weather() function into two two functions:
-          connect_to_wifi()  and  fetch_and_display_weather().
-        - Moved more control back to loop() and away from the functions
+Version 1.5
+   - Removed the debugging code as it isn't necessary anymore
+   - Split get_weather() into two two functions:
+     connect_to_wifi()  and  fetch_and_display_weather()
+   - Corrected a recursive function call in connect_to_wifi() that
+     I didn't realize was there. Corrected it by adding an is_connected
+     flag, moving flow control back to loop(), and by now using a
+     "while" loop instead of an "if" block to ensure a wifi-connection.
+
+
+
+
