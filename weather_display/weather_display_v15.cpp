@@ -200,10 +200,10 @@ bool connect_to_wifi() {
         case WL_DISCONNECTED:     // Fall through to the next case
         case WL_CONNECT_FAILED:   // Fall through to the next case
         case WL_CONNECTION_LOST:  // Display wait messages for 5 minutes, then return to loop() to retry connecting
-            // display_message("    Disconnected\n    from network\n\n  Waiting 5 minutes\n   before retrying\n", 1, 1 * 60);       // Uncomment after making sure it works
-            // display_message("    Disconnected\n    from network\n\n  Waiting 4 minutes\n   before retrying\n", 1, 1 * 60);
-            // display_message("    Disconnected\n    from network\n\n  Waiting 3 minutes\n   before retrying\n", 1, 1 * 60);
-            // display_message("    Disconnected\n    from network\n\n  Waiting 2 minutes\n   before retrying\n", 1, 1 * 60);
+            display_message("    Disconnected\n    from network\n\n  Waiting 5 minutes\n   before retrying\n", 1, 1 * 60);
+            display_message("    Disconnected\n    from network\n\n  Waiting 4 minutes\n   before retrying\n", 1, 1 * 60);
+            display_message("    Disconnected\n    from network\n\n  Waiting 3 minutes\n   before retrying\n", 1, 1 * 60);
+            display_message("    Disconnected\n    from network\n\n  Waiting 2 minutes\n   before retrying\n", 1, 1 * 60);
             display_message("    Disconnected\n    from network\n\n  Waiting 1 minute \n   before retrying\n", 1, 1 * 60);
             is_connected = false; // Let the program know we could not connect
             return false;         // We failed to connect after tryeing, so return to loop()
